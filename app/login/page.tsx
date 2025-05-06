@@ -34,7 +34,7 @@ export default function Login() {
     if (formData.email === 'test@immovision.com' && formData.password === '123') {
       // Redirection après connexion réussie
       console.log("Connexion réussie");
-      //router.push('/dashboard');  // Remplace '/dashboard' par la page vers laquelle tu veux rediriger
+      window.location.href = 'http://localhost:3000/monPortail';
     } else {
       setError('Email ou mot de passe incorrect.');
     }
