@@ -113,7 +113,7 @@ export default function Login() {
           />
         </div>
         <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#4CAF50', color: '#fff', border: 'none', borderRadius: '4px' }}>
-          Créez le compte
+          Crée le compte
         </button>
       </form>
     </div>
