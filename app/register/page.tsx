@@ -8,9 +8,10 @@ interface FormData {
   confirmPassword: string;  // Nouveau champ pour confirmer le mot de passe
 }
 
-export default function Login() {
+export default function CreateAccount() {
   const [formData, setFormData] = useState<FormData>({ email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
 
   // Mise à jour des champs du formulaire
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,8 +23,9 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // Réinitialisation de l'erreur
+    // Réinitialisation des messages d'erreur et de succès
     setError('');
+    setSuccessMessage('');
 
     // Validation simple des champs
     if (!formData.email || !formData.password || !formData.confirmPassword) {
@@ -37,20 +39,17 @@ export default function Login() {
       return;
     }
 
-    // Simuler l'authentification (remplace par une logique d'authentification réelle)
-    if (formData.email === 'test@immovision.com' && formData.password === '123') {
-      // Redirection après connexion réussie
-      console.log("Connexion réussie");
-      //router.push('/dashboard');  // Remplace '/dashboard' par la page vers laquelle tu veux rediriger
-    } else {
-      setError('Email ou mot de passe incorrect.');
-    }
+    // Simuler la création d'un compte (remplacer par la logique d'inscription réelle)
+    setSuccessMessage('Votre compte a été créé avec succès !');
+    console.log('Compte créé avec email:', formData.email);
+    // Ici, tu pourrais appeler une API pour créer un compte ou rediriger vers une autre page.
   };
 
   return (
     <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
       <h2>Crée un compte</h2>
       {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+      {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="email">Email :</label>
