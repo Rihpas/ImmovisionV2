@@ -5,11 +5,11 @@ const recupererCartes = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     const { email } = req.query;  // Email de l'utilisateur passé en paramètres
 
-    if (!email) {
+    if (!email || typeof email !== 'string') {
       return res.status(400).json({ error: 'Email requis.' });
     }
 
-    const { db } = await connectToDatabase();
+    const db = await connectToDatabase();
 
     // Récupérer toutes les cartes de l'utilisateur
     const cartes = await db.collection('cartes').find({ userId: email }).toArray();

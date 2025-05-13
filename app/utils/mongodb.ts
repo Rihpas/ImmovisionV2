@@ -1,30 +1,33 @@
-// utils/mongodb.js
-import { MongoClient } from 'mongodb';
+// utils/mongodb.ts
+import { MongoClient, Db } from 'mongodb';
 
-const uri = process.env.MONGODB_URI; // Récupère l'URI de MongoDB depuis .env.local
+const uri = process.env.MONGODB_URI;
+const dbName = process.env.MONGODB_DB || 'immovision';
 
-let client;
-let clientPromise;
+if (!uri) {
+  throw new Error('MONGODB_URI n’est pas défini dans le fichier .env.local');
+}
 
-// En développement, on utilise un client global MongoDB pour éviter de créer de nouvelles connexions à chaque rechargement de page.
+let client: MongoClient;
+let clientPromise: Promise<MongoClient>;
+
+declare global {
+  // Ajouté pour éviter les erreurs de types avec global dans TypeScript
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
+}
+
 if (process.env.NODE_ENV === 'development') {
-  // En développement, MongoDB crée une connexion persistante
-  if (global._mongoClientPromise) {
-    // Utilisation du client MongoDB global pour éviter de recréer la connexion à chaque rechargement de page
-    clientPromise = global._mongoClientPromise;
-  } else {
-    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri);
     global._mongoClientPromise = client.connect();
-    clientPromise = global._mongoClientPromise;
   }
+  clientPromise = global._mongoClientPromise!;
 } else {
-  // En production, une nouvelle connexion est créée pour chaque requête
-  client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  client = new MongoClient(uri);
   clientPromise = client.connect();
 }
 
-export const connectToDatabase = async () => {
-  const clientConnection = await clientPromise;
-  const db = clientConnection.db(); // Sélection de la base de données par défaut
-  return db;
+export const connectToDatabase = async (): Promise<Db> => {
+  const client = await clientPromise;
+  return client.db(dbName); // Utilise immovision par défaut
 };
