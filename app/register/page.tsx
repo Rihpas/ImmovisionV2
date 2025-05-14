@@ -1,11 +1,10 @@
 'use client'
 import { useState, FormEvent } from 'react';
 
-// Définition des types pour l'état de la page
 interface FormData {
   email: string;
   password: string;
-  confirmPassword: string;  // Nouveau champ pour confirmer le mot de passe
+  confirmPassword: string;
 }
 
 export default function CreateAccount() {
@@ -13,46 +12,51 @@ export default function CreateAccount() {
   const [error, setError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
 
-  // Mise à jour des champs du formulaire
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Gestion de la soumission du formulaire
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    // Réinitialisation des messages d'erreur et de succès
     setError('');
     setSuccessMessage('');
 
-    // Validation simple des champs
     if (!formData.email || !formData.password || !formData.confirmPassword) {
       setError('Tous les champs sont requis.');
       return;
     }
 
-    // Vérification de la correspondance des mots de passe
     if (formData.password !== formData.confirmPassword) {
       setError('Les mots de passe ne correspondent pas.');
       return;
     }
 
-    // Simuler la création d'un compte (remplacer par la logique d'inscription réelle)
     setSuccessMessage('Votre compte a été créé avec succès !');
     console.log('Compte créé avec email:', formData.email);
-    // Ici, tu pourrais appeler une API pour créer un compte ou rediriger vers une autre page.
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h2>Crée un compte</h2>
+    <div
+      style={{
+        maxWidth: '400px',
+        margin: '0 auto',
+        padding: '30px',
+        border: '1px solid #ddd',
+        borderRadius: '12px',
+        backgroundColor: '#fff',
+        color: '#000', // <-- important : tout en noir
+        boxShadow: '0 0 20px rgba(0,0,0,0.05)',
+      }}
+    >
+      <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', fontWeight: '600' }}>Créer un compte</h2>
+
       {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
       {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
+
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="email">Email :</label>
+          <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>Email :</label>
           <input
             type="email"
             id="email"
@@ -63,16 +67,18 @@ export default function CreateAccount() {
             placeholder="Entrez votre email"
             style={{
               width: '100%',
-              padding: '8px',
-              marginTop: '5px',
-              border: '2px solid #4CAF50',  // Bordure verte de 2px
-              borderRadius: '4px',          // Coins arrondis
-              outline: 'none',              // Supprimer le contour bleu par défaut au focus
+              padding: '10px',
+              border: '2px solid #4CAF50',
+              borderRadius: '6px',
+              outline: 'none',
+              color: '#000', // <-- texte en noir
+              backgroundColor: '#fff', // <-- fond blanc
             }}
           />
         </div>
+
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="password">Mot de passe :</label>
+          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Mot de passe :</label>
           <input
             type="password"
             id="password"
@@ -83,16 +89,18 @@ export default function CreateAccount() {
             placeholder="Entrez votre mot de passe"
             style={{
               width: '100%',
-              padding: '8px',
-              marginTop: '5px',
-              border: '2px solid #4CAF50',  // Bordure verte de 2px
-              borderRadius: '4px',          // Coins arrondis
-              outline: 'none',              // Supprimer le contour bleu par défaut au focus
+              padding: '10px',
+              border: '2px solid #4CAF50',
+              borderRadius: '6px',
+              outline: 'none',
+              color: '#000',
+              backgroundColor: '#fff',
             }}
           />
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="confirmPassword">Confirmer le mot de passe :</label>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label htmlFor="confirmPassword" style={{ display: 'block', marginBottom: '5px' }}>Confirmer le mot de passe :</label>
           <input
             type="password"
             id="confirmPassword"
@@ -103,16 +111,30 @@ export default function CreateAccount() {
             placeholder="Confirmez votre mot de passe"
             style={{
               width: '100%',
-              padding: '8px',
-              marginTop: '5px',
-              border: '2px solid #4CAF50',  // Bordure verte de 2px
-              borderRadius: '4px',          // Coins arrondis
-              outline: 'none',              // Supprimer le contour bleu par défaut au focus
+              padding: '10px',
+              border: '2px solid #4CAF50',
+              borderRadius: '6px',
+              outline: 'none',
+              color: '#000',
+              backgroundColor: '#fff',
             }}
           />
         </div>
-        <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#4CAF50', color: '#fff', border: 'none', borderRadius: '4px' }}>
-          Crée le compte
+
+        <button
+          type="submit"
+          style={{
+            width: '100%',
+            padding: '12px',
+            backgroundColor: '#4CAF50',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+          }}
+        >
+          Créer le compte
         </button>
       </form>
     </div>

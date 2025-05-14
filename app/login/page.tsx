@@ -1,7 +1,6 @@
 'use client'
 import { useState, FormEvent } from 'react';
 
-// Définition des types pour l'état de la page
 interface FormData {
   email: string;
   password: string;
@@ -11,28 +10,21 @@ export default function Login() {
   const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
   const [error, setError] = useState<string>('');
 
-  // Mise à jour des champs du formulaire
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Gestion de la soumission du formulaire
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    // Réinitialisation de l'erreur
     setError('');
 
-    // Validation simple des champs
     if (!formData.email || !formData.password) {
       setError('Tous les champs sont requis.');
       return;
     }
 
-    // Simuler l'authentification (remplace par une logique d'authentification réelle)
     if (formData.email === 'test@immovision.com' && formData.password === '123') {
-      // Redirection après connexion réussie
       console.log("Connexion réussie");
       window.location.href = 'http://localhost:3000/monPortail';
     } else {
@@ -41,12 +33,25 @@ export default function Login() {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h2>Se connecter</h2>
+    <div
+      style={{
+        maxWidth: '400px',
+        margin: '0 auto',
+        padding: '30px',
+        border: '1px solid #ddd',
+        borderRadius: '12px',
+        backgroundColor: '#fff',
+        color: '#000',
+        boxShadow: '0 0 20px rgba(0,0,0,0.05)',
+      }}
+    >
+      <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', fontWeight: '600' }}>Se connecter</h2>
+
       {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="email">Email :</label>
+          <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>Email :</label>
           <input
             type="email"
             id="email"
@@ -57,16 +62,18 @@ export default function Login() {
             placeholder="Entrez votre email"
             style={{
               width: '100%',
-              padding: '8px',
-              marginTop: '5px',
-              border: '2px solid #4CAF50',  // Bordure verte de 2px
-              borderRadius: '4px',          // Coins arrondis
-              outline: 'none',              // Supprimer le contour bleu par défaut au focus
+              padding: '10px',
+              border: '2px solid #4CAF50',
+              borderRadius: '6px',
+              outline: 'none',
+              color: '#000',
+              backgroundColor: '#fff',
             }}
           />
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="password">Mot de passe :</label>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Mot de passe :</label>
           <input
             type="password"
             id="password"
@@ -77,15 +84,29 @@ export default function Login() {
             placeholder="Entrez votre mot de passe"
             style={{
               width: '100%',
-              padding: '8px',
-              marginTop: '5px',
-              border: '2px solid #4CAF50',  // Bordure verte de 2px
-              borderRadius: '4px',          // Coins arrondis
-              outline: 'none',              // Supprimer le contour bleu par défaut au focus
+              padding: '10px',
+              border: '2px solid #4CAF50',
+              borderRadius: '6px',
+              outline: 'none',
+              color: '#000',
+              backgroundColor: '#fff',
             }}
           />
         </div>
-        <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#4CAF50', color: '#fff', border: 'none', borderRadius: '4px' }}>
+
+        <button
+          type="submit"
+          style={{
+            width: '100%',
+            padding: '12px',
+            backgroundColor: '#4CAF50',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+          }}
+        >
           Se connecter
         </button>
       </form>
