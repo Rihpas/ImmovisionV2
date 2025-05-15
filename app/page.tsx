@@ -2,11 +2,17 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen gap-16 p-8 sm:p-20">
-      <main className="flex flex-col items-center sm:items-start gap-10 text-center sm:text-left max-w-4xl">
+    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen gap-12 p-8 sm:p-20">
+      <main className="flex flex-col items-center sm:items-start gap-10 text-center sm:text-left max-w-4xl w-full">
+        
+        {/* Titre principal */}
+        <h1 className="text-5xl font-extrabold text-white drop-shadow-lg max-w-xl">
+          Une meilleure vision <br /> de l'immobilier
+        </h1>
+
         <Image
           className="rounded-xl shadow-2xl border border-white/20"
-          src="/image-présentation.jpg"
+          src="/immovision.png"
           alt="Présentation Immovision"
           width={900}
           height={800}
@@ -26,10 +32,20 @@ export default function Home() {
           >
             ✍️ Créer un compte
           </a>
+          <a
+            className="rounded-full bg-blue-600 text-white hover:bg-blue-700 transition font-medium shadow-md px-6 py-3 text-sm sm:text-base"
+            href="/map"
+          >
+            🗺️ Voir la carte
+          </a>
+          <a
+            className="rounded-full bg-green-600 text-white hover:bg-green-700 transition font-medium shadow-md px-6 py-3 text-sm sm:text-base"
+            href="/monPortail"
+          >
+            🚪 Aller sur monPortail
+          </a>
         </div>
       </main>
-
-      
     </div>
   );
 }
