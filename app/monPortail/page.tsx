@@ -14,10 +14,16 @@ export default function DashboardPage() {
     setCartes(cartes.filter((key) => key !== keyToRemove));
   };
 
+  // Pour l'instant, les données ne remontent pas,
+  // donc ce bouton peut déclencher une sauvegarde globale fictive
+  const sauvegarderTout = () => {
+    alert('Fonction sauvegarder à implémenter : récupérer et stocker les données.');
+  };
+
   return (
     <div
       style={{
-        maxWidth: '800px',
+        maxWidth: '900px',
         margin: '0 auto',
         padding: '30px',
         backgroundColor: '#fff',
@@ -31,27 +37,45 @@ export default function DashboardPage() {
       </h2>
       <p style={{ marginBottom: '20px' }}>Données chargées avec succès !</p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginLeft: '30px' }}>
         {cartes.map((key) => (
           <CarteMentale key={key} onRemove={() => supprimerCarte(key)} />
         ))}
       </div>
 
-      <button
-        onClick={ajouterCarte}
-        style={{
-          marginTop: '25px',
-          padding: '12px 20px',
-          backgroundColor: '#007bff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          fontWeight: '600',
-          cursor: 'pointer',
-        }}
-      >
-        + Ajouter une carte
-      </button>
+      <div style={{ marginTop: '25px', display: 'flex', gap: '15px' }}>
+        <button
+          onClick={ajouterCarte}
+          style={{
+            padding: '12px 20px',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            flex: 1,
+          }}
+        >
+          + Ajouter une carte
+        </button>
+
+        <button
+          onClick={sauvegarderTout}
+          style={{
+            padding: '12px 20px',
+            backgroundColor: '#28a745',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            flex: 1,
+          }}
+        >
+          💾 Tout sauvegarder
+        </button>
+      </div>
     </div>
   );
 }
