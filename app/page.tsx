@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+
 export default function Home() {
   return (
     <div className="relative z-10 flex flex-col items-center justify-center min-h-screen gap-12 p-8 sm:p-20">
@@ -45,6 +46,7 @@ export default function Home() {
             🚪 Aller sur monPortail
           </a>
         </div>
+        
       </main>
     </div>
   );
