@@ -2,7 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent } from 'react'
 
-export default function Page() {
+export default function RegisterPage() {
   const [formData, setFormData] = useState({
     nom: '',
     email: '',
@@ -30,7 +30,7 @@ export default function Page() {
     }
 
     try {
-      const res = await fetch('api/create', {
+      const res = await fetch('/api/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nom, email, password })
@@ -48,11 +48,24 @@ export default function Page() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: 'auto', padding: 20 }}>
-      <h1>Créer un compte</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div
+      style={{
+        maxWidth: '400px',
+        margin: '0 auto',
+        padding: '30px',
+        border: '1px solid #ddd',
+        borderRadius: '12px',
+        backgroundColor: '#fff',
+        color: '#000',
+        boxShadow: '0 0 20px rgba(0,0,0,0.05)'
+      }}
+    >
+      <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', fontWeight: '600' }}>Créer un compte</h2>
+
+      {error && <p style={{ color: 'red', marginBottom: '10px' }}>{error}</p>}
+      {successMessage && <p style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</p>}
+
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <input
           type="text"
           name="nom"
@@ -60,7 +73,14 @@ export default function Page() {
           value={formData.nom}
           onChange={handleChange}
           required
-          style={{ padding: 8 }}
+          style={{
+            padding: '10px',
+            border: '2px solid #4CAF50',
+            borderRadius: '6px',
+            outline: 'none',
+            color: '#000',
+            backgroundColor: '#fff'
+          }}
         />
         <input
           type="email"
@@ -69,7 +89,14 @@ export default function Page() {
           value={formData.email}
           onChange={handleChange}
           required
-          style={{ padding: 8 }}
+          style={{
+            padding: '10px',
+            border: '2px solid #4CAF50',
+            borderRadius: '6px',
+            outline: 'none',
+            color: '#000',
+            backgroundColor: '#fff'
+          }}
         />
         <input
           type="password"
@@ -78,9 +105,27 @@ export default function Page() {
           value={formData.password}
           onChange={handleChange}
           required
-          style={{ padding: 8 }}
+          style={{
+            padding: '10px',
+            border: '2px solid #4CAF50',
+            borderRadius: '6px',
+            outline: 'none',
+            color: '#000',
+            backgroundColor: '#fff'
+          }}
         />
-        <button type="submit" style={{ padding: 10, backgroundColor: 'green', color: 'white' }}>
+        <button
+          type="submit"
+          style={{
+            padding: '12px',
+            backgroundColor: '#4CAF50',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
           Créer le compte
         </button>
       </form>
