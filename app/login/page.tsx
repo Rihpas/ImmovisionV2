@@ -1,36 +1,49 @@
 'use client'
-import { useState, FormEvent } from 'react';
+
+import { useState, FormEvent } from 'react'
 
 interface FormData {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 export default function Login() {
-  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
-  const [error, setError] = useState<string>('');
+  const [formData, setFormData] = useState<FormData>({ email: '', password: '' })
+  const [error, setError] = useState<string>('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
 
     if (!formData.email || !formData.password) {
-      setError('Tous les champs sont requis.');
-      return;
+      setError('Tous les champs sont requis.')
+      return
     }
 
-    if (formData.email === 'test@immovision.com' && formData.password === '123') {
-      console.log("Connexion réussie");
-      window.location.href = 'http://localhost:3000/monPortail';
-    } else {
-      setError('Email ou mot de passe incorrect.');
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        // Redirection après succès
+        window.location.href = '/monPortail'
+      } else {
+        setError(data.message || 'Email ou mot de passe incorrect.')
+      }
+    } catch {
+      setError('Erreur serveur.')
     }
-  };
+  }
 
   return (
     <div
@@ -42,7 +55,7 @@ export default function Login() {
         borderRadius: '12px',
         backgroundColor: '#fff',
         color: '#000',
-        boxShadow: '0 0 20px rgba(0,0,0,0.05)',
+        boxShadow: '0 0 20px rgba(0,0,0,0.05)'
       }}
     >
       <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', fontWeight: '600' }}>Se connecter</h2>
@@ -51,7 +64,9 @@ export default function Login() {
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>Email :</label>
+          <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>
+            Email :
+          </label>
           <input
             type="email"
             id="email"
@@ -67,13 +82,15 @@ export default function Login() {
               borderRadius: '6px',
               outline: 'none',
               color: '#000',
-              backgroundColor: '#fff',
+              backgroundColor: '#fff'
             }}
           />
         </div>
 
         <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Mot de passe :</label>
+          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>
+            Mot de passe :
+          </label>
           <input
             type="password"
             id="password"
@@ -89,7 +106,7 @@ export default function Login() {
               borderRadius: '6px',
               outline: 'none',
               color: '#000',
-              backgroundColor: '#fff',
+              backgroundColor: '#fff'
             }}
           />
         </div>
@@ -104,12 +121,12 @@ export default function Login() {
             border: 'none',
             borderRadius: '6px',
             fontWeight: 'bold',
-            cursor: 'pointer',
+            cursor: 'pointer'
           }}
         >
           Se connecter
         </button>
       </form>
     </div>
-  );
+  )
 }
