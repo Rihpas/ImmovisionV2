@@ -1,20 +1,46 @@
-import { MongoClient } from 'mongodb'
+import mongoose from 'mongoose';
 
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'
-const options = {}
+const MONGODB_URI = process.env.MONGODB_URI || '';
 
-let client: MongoClient
-let clientPromise: Promise<MongoClient>
-
-declare global {
-  // eslint-disable-next-line no-var
-  var _mongoClientPromise: Promise<MongoClient>
+if (!MONGODB_URI) {
+  throw new Error(
+    'Veuillez définir la variable d’environnement MONGODB_URI dans votre fichier .env.local'
+  );
 }
 
-if (!global._mongoClientPromise) {
-  client = new MongoClient(uri, options)
-  global._mongoClientPromise = client.connect()
-}
-clientPromise = global._mongoClientPromise
+/**
+ * Gestion de la connexion MongoDB pour éviter plusieurs connexions lors du hot reload
+ */
+let cached = (global as any).mongoose;
 
-export default clientPromise
+if (!cached) {
+  cached = (global as any).mongoose = { conn: null, promise: null };
+}
+
+async function dbConnect() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      // autres options mongoose si besoin
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose;
+    });
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+
+  return cached.conn;
+}
+
+export default dbConnect;

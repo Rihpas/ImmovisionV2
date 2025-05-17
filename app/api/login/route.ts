@@ -1,4 +1,4 @@
-import clientPromise from '@/lib/mongo'
+import clientPromise from '../../utils/mongodb'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcrypt'
 

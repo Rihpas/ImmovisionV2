@@ -1,4 +1,4 @@
-import clientPromise from '@/lib/mongo'
+import clientPromise from '../../utils/mongodb'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcrypt'
 
@@ -25,6 +25,7 @@ export async function POST(request: Request) {
       nom,
       email,
       password: hashedPassword,
+      cartes: [],
       createdAt: new Date()
     })
 

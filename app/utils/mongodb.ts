@@ -1,33 +1,29 @@
-// utils/mongodb.ts
-import { MongoClient, Db } from 'mongodb';
+// lib/mongo.ts
+import { MongoClient } from 'mongodb'
 
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.MONGODB_DB || 'immovision';
+const uri = process.env.MONGODB_URI
 
 if (!uri) {
-  throw new Error('MONGODB_URI n’est pas défini dans le fichier .env.local');
+  throw new Error('MONGODB_URI manquant dans les variables d’environnement')
 }
 
-let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
+const options = {}
 
-declare global {
-  // Ajouté pour éviter les erreurs de types avec global dans TypeScript
-  var _mongoClientPromise: Promise<MongoClient> | undefined;
-}
+let client: MongoClient
+let clientPromise: Promise<MongoClient>
 
 if (process.env.NODE_ENV === 'development') {
+  // @ts-ignore
   if (!global._mongoClientPromise) {
-    client = new MongoClient(uri);
-    global._mongoClientPromise = client.connect();
+    client = new MongoClient(uri, options)
+    // @ts-ignore
+    global._mongoClientPromise = client.connect()
   }
-  clientPromise = global._mongoClientPromise!;
+  // @ts-ignore
+  clientPromise = global._mongoClientPromise
 } else {
-  client = new MongoClient(uri);
-  clientPromise = client.connect();
+  client = new MongoClient(uri, options)
+  clientPromise = client.connect()
 }
 
-export const connectToDatabase = async (): Promise<Db> => {
-  const client = await clientPromise;
-  return client.db(dbName); // Utilise immovision par défaut
-};
+export default clientPromise

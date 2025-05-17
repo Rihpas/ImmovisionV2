@@ -4,20 +4,52 @@ import { useState } from 'react';
 import CarteMentale from '../component/CarteMentale';
 
 export default function MonPortail() {
-  const [cartes, setCartes] = useState<number[]>([]);
+  // Les cartes contiennent des objets complets, pas juste des IDs
+  const [cartes, setCartes] = useState([]);
+
+  // Simulation d'email utilisateur connecté, remplace par ta gestion d'auth réelle
+  const userEmail = 'utilisateur@example.com';
 
   const ajouterCarte = () => {
-    setCartes((prev) => [...prev, Date.now()]);
+    // Nouvelle carte vide avec un nomLieu unique temporaire (ex: timestamp)
+    const nouvelleCarte = {
+      nomLieu: `Lieu-${Date.now()}`,
+      prix: '',
+      metresCarres: '',
+      localisation: '',
+      siteUrl: '',
+      visite: false,
+      note: 0,
+      noteLibre: '',
+      imageUrls: [],
+      createdAt: new Date(),
+    };
+
+    setCartes(prev => [...prev, nouvelleCarte]);
   };
 
-  const supprimerCarte = (keyToRemove: number) => {
-    setCartes(cartes.filter((key) => key !== keyToRemove));
+  const supprimerCarte = (nomLieuToRemove) => {
+    setCartes(prev => prev.filter(c => c.nomLieu !== nomLieuToRemove));
+    // Ici tu peux aussi appeler une API pour supprimer dans BDD si besoin
   };
 
-  // Pour l'instant, les données ne remontent pas,
-  // donc ce bouton peut déclencher une sauvegarde globale fictive
-  const sauvegarderTout = () => {
-    alert('Fonction sauvegarder à implémenter : récupérer et stocker les données.');
+  const onSaveCarte = async (carte) => {
+    try {
+      const res = await fetch('/api/cartes/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail, carte }),
+      });
+
+      if (!res.ok) throw new Error('Erreur lors de la sauvegarde');
+
+      const data = await res.json();
+
+      setCartes(data.cartes); // Met à jour avec les cartes depuis la BDD
+    } catch (error) {
+      console.error(error);
+      alert('Erreur lors de la sauvegarde');
+    }
   };
 
   return (
@@ -35,11 +67,15 @@ export default function MonPortail() {
       <h2 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '10px' }}>
         Bienvenue sur votre portail
       </h2>
-      <p style={{ marginBottom: '20px' }}>Données chargées avec succès !</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginLeft: '30px' }}>
-        {cartes.map((key) => (
-          <CarteMentale key={key} onRemove={() => supprimerCarte(key)} />
+        {cartes.map((carte) => (
+          <CarteMentale
+            key={carte.nomLieu}
+            carte={carte}
+            onRemove={() => supprimerCarte(carte.nomLieu)}
+            onSave={onSaveCarte}
+          />
         ))}
       </div>
 
@@ -58,22 +94,6 @@ export default function MonPortail() {
           }}
         >
           + Ajouter une carte
-        </button>
-
-        <button
-          onClick={sauvegarderTout}
-          style={{
-            padding: '12px 20px',
-            backgroundColor: '#28a745',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            flex: 1,
-          }}
-        >
-          💾 Tout sauvegarder
         </button>
       </div>
     </div>

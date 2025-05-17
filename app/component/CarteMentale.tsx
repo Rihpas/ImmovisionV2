@@ -1,26 +1,50 @@
 'use client';
 
-import { useRef } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaStar } from 'react-icons/fa';
 
-interface CarteMentaleProps {
-  onRemove: () => void;
+interface Carte {
+  nomLieu: string;
+  prix: string;
+  metresCarres: string;
+  localisation: string;
+  siteUrl: string;
+  visite: boolean;
+  note: number;
+  noteLibre: string;
+  imageUrls: string[];
 }
 
-const CarteMentale: React.FC<CarteMentaleProps> = ({ onRemove }) => {
-  const [nomLieu, setNomLieu] = useState('');
-  const [prix, setPrix] = useState('');
-  const [metresCarres, setMetresCarres] = useState('');
-  const [localisation, setLocalisation] = useState('');
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [nouvelleImage, setNouvelleImage] = useState('');
-  const [siteUrl, setSiteUrl] = useState('');
-  const [visite, setVisite] = useState(false);
-  const [note, setNote] = useState<number>(0);
-  const [noteLibre, setNoteLibre] = useState('');
+interface CarteMentaleProps {
+  carte?: Partial<Carte>; // carte optionnelle pour nouvelle carte ou édition
+  onRemove: () => void;
+  onSave: (carte: Carte) => void;
+}
 
-  const carteRef = useRef<HTMLDivElement>(null);
+const CarteMentale: React.FC<CarteMentaleProps> = ({ carte = {}, onRemove, onSave }) => {
+  const [nomLieu, setNomLieu] = useState(carte.nomLieu || '');
+  const [prix, setPrix] = useState(carte.prix || '');
+  const [metresCarres, setMetresCarres] = useState(carte.metresCarres || '');
+  const [localisation, setLocalisation] = useState(carte.localisation || '');
+  const [siteUrl, setSiteUrl] = useState(carte.siteUrl || '');
+  const [visite, setVisite] = useState(carte.visite || false);
+  const [note, setNote] = useState(carte.note || 0);
+  const [noteLibre, setNoteLibre] = useState(carte.noteLibre || '');
+  const [imageUrls, setImageUrls] = useState<string[]>(carte.imageUrls || []);
+  const [nouvelleImage, setNouvelleImage] = useState('');
+
+  // Met à jour les états si la carte change (utile pour édition)
+  useEffect(() => {
+    setNomLieu(carte.nomLieu || '');
+    setPrix(carte.prix || '');
+    setMetresCarres(carte.metresCarres || '');
+    setLocalisation(carte.localisation || '');
+    setSiteUrl(carte.siteUrl || '');
+    setVisite(carte.visite || false);
+    setNote(carte.note || 0);
+    setNoteLibre(carte.noteLibre || '');
+    setImageUrls(carte.imageUrls || []);
+  }, [carte]);
 
   const ajouterImage = () => {
     if (nouvelleImage.trim() !== '') {
@@ -35,246 +59,139 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ onRemove }) => {
     setImageUrls(copie);
   };
 
-  const modifierImage = (index: number, nouvelleValeur: string) => {
-    const copie = [...imageUrls];
-    copie[index] = nouvelleValeur;
-    setImageUrls(copie);
-  };
-
-  const imprimerCarte = () => {
-    if (!carteRef.current) return;
-
-    const contenu = carteRef.current.cloneNode(true) as HTMLElement;
-
-    // Supprime les inputs URL liés aux images (garder juste les images)
-    contenu.querySelectorAll('input[type="text"]').forEach((el) => {
-      const parent = el.parentElement;
-      if (parent && parent.querySelector('img')) {
-        el.remove();
-      }
-    });
-
-    // Supprime tous les boutons et liens (ajouter, supprimer, ouvrir site, imprimer)
-    contenu.querySelectorAll('button, a').forEach((el) => el.remove());
-
-    // Remplace les inputs et textarea par leur valeur texte
-    contenu.querySelectorAll('input, textarea').forEach((el) => {
-    const input = el as HTMLInputElement | HTMLTextAreaElement;
-    const span = document.createElement('div');
-
-    if (input instanceof HTMLInputElement && input.type === 'checkbox') {
-       // Pour les checkboxes, afficher "Oui" ou "Non" seulement 1 fois
-      const parent = input.closest('label');
-      if (parent) {
-        const output = document.createElement('div');
-        output.textContent = input.checked ? 'Oui' : 'Non';
-        parent.replaceWith(output);
-      }
-    } else {
-      span.textContent = input.value;
-      span.style.marginBottom = '0.5rem';
-      input.replaceWith(span);
+  const enregistrerCarte = () => {
+    // Validation basique (tu peux améliorer)
+    if (!nomLieu.trim()) {
+      alert('Le nom du lieu est obligatoire');
+      return;
     }
-  });
-
-    // Remplacer les étoiles FaStar par du texte ★★★☆☆
-    const yellowStars = contenu.querySelectorAll('.fa-star.text-yellow-400').length;
-    const starsContainer = contenu.querySelector('.fa-star')?.parentElement;
-    if (starsContainer) {
-      const starsText = document.createElement('div');
-      starsText.textContent = 'Note : ' + '★'.repeat(yellowStars) + '☆'.repeat(5 - yellowStars);
-      starsText.style.marginBottom = '1rem';
-      starsContainer.replaceWith(starsText);
-    }
-
-    // Ouvre nouvelle fenêtre pour impression
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Impression Carte Mentale</title>
-            <style>
-              body { font-family: sans-serif; padding: 20px; color: #000; }
-              img { max-width: 100%; height: auto; margin-bottom: 1rem; }
-              h3 { font-size: 1.25rem; margin-bottom: 1rem; }
-              div { margin-bottom: 0.75rem; }
-            </style>
-          </head>
-          <body>${contenu.innerHTML}</body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    }
+    const nouvelleCarte: Carte = {
+      nomLieu,
+      prix,
+      metresCarres,
+      localisation,
+      siteUrl,
+      visite,
+      note,
+      noteLibre,
+      imageUrls,
+    };
+    onSave(nouvelleCarte);
   };
 
   return (
-    <div className="border p-4 rounded-lg my-4 shadow-md flex gap-6">
-      <div className="flex-1" ref={carteRef}>
-        <div className="flex justify-between mb-2">
-          <h3 className="font-bold">Carte Mentale - Logement</h3>
-          <button onClick={onRemove} className="text-red-500 hover:underline">
+    <div className="border p-4 rounded-lg my-4 shadow-md bg-white text-black">
+      <h3 className="font-bold mb-2">Carte Mentale - Logement</h3>
+
+      <label>Nom du lieu</label>
+      <input
+        className="border p-2 w-full mb-2"
+        value={nomLieu}
+        onChange={(e) => setNomLieu(e.target.value)}
+      />
+
+      <label>Prix</label>
+      <input
+        className="border p-2 w-full mb-2"
+        value={prix}
+        onChange={(e) => setPrix(e.target.value)}
+      />
+
+      <label>Mètres carrés</label>
+      <input
+        className="border p-2 w-full mb-2"
+        value={metresCarres}
+        onChange={(e) => setMetresCarres(e.target.value)}
+      />
+
+      <label>Localisation</label>
+      <input
+        className="border p-2 w-full mb-2"
+        value={localisation}
+        onChange={(e) => setLocalisation(e.target.value)}
+      />
+
+      <label>As-tu visité ce lieu ?</label>
+      <label className="block mb-2">
+        <input
+          type="checkbox"
+          checked={visite}
+          onChange={(e) => setVisite(e.target.checked)}
+        />{' '}
+        {visite ? 'Oui' : 'Non'}
+      </label>
+
+      <label>Lien du site</label>
+      <input
+        className="border p-2 w-full mb-2"
+        value={siteUrl}
+        onChange={(e) => setSiteUrl(e.target.value)}
+      />
+
+      <label>Note</label>
+      <div className="flex mb-2">
+        {[1, 2, 3, 4, 5].map((val) => (
+          <FaStar
+            key={val}
+            size={24}
+            className={`cursor-pointer ${val <= note ? 'text-yellow-400' : 'text-gray-300'}`}
+            onClick={() => setNote(val)}
+          />
+        ))}
+      </div>
+
+      <label>Images</label>
+      {imageUrls.map((url, idx) => (
+        <div key={idx} className="mb-2">
+          <img src={url} alt={`image-${idx}`} className="w-full max-w-xs rounded" />
+          <button
+            onClick={() => supprimerImage(idx)}
+            className="text-red-500 text-sm"
+            type="button"
+          >
             Supprimer
           </button>
         </div>
+      ))}
 
-        {/* Nom du lieu */}
-        <div className="mb-2">
-          <label className="block">Nom du lieu</label>
-          <input
-            type="text"
-            value={nomLieu}
-            onChange={(e) => setNomLieu(e.target.value)}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        {/* Prix */}
-        <div className="mb-2">
-          <label className="block">Prix</label>
-          <input
-            type="text"
-            value={prix}
-            onChange={(e) => setPrix(e.target.value)}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        {/* Mètres carrés */}
-        <div className="mb-2">
-          <label className="block">Mètres carrés</label>
-          <input
-            type="text"
-            value={metresCarres}
-            onChange={(e) => setMetresCarres(e.target.value)}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        {/* Localisation */}
-        <div className="mb-2">
-          <label className="block">Localisation</label>
-          <input
-            type="text"
-            value={localisation}
-            onChange={(e) => setLocalisation(e.target.value)}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        {/* Visite */}
-        <div className="mb-4">
-          <label className="block font-semibold">As-tu visité ce lieu ?</label>
-          <label className="inline-flex items-center mt-2">
-            <input type="checkbox" checked={visite} onChange={(e) => setVisite(e.target.checked)} className="mr-2" />
-            {visite ? 'Oui' : 'Non'}
-          </label>
-        </div>
-
-        {/* Lien site */}
-        <div className="mb-4">
-          <label className="block">Lien du site</label>
-          <input
-            type="text"
-            value={siteUrl}
-            onChange={(e) => setSiteUrl(e.target.value)}
-            className="border p-2 w-full mb-1"
-            placeholder="https://..."
-          />
-          {siteUrl && (
-            <a
-              href={siteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 underline text-sm"
-            >
-              Ouvrir le site
-            </a>
-          )}
-        </div>
-
-        {/* Note */}
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Note</label>
-          <div className="flex">
-            {[1, 2, 3, 4, 5].map((val) => (
-              <FaStar
-                key={val}
-                size={24}
-                className={`cursor-pointer transition ${
-                  val <= note ? 'text-yellow-400' : 'text-gray-300'
-                }`}
-                onClick={() => setNote(val)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Images */}
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Images</label>
-          {imageUrls.map((url, index) => (
-            <div key={index} className="mb-3">
-              <img
-                src={url}
-                alt={`Image ${index + 1}`}
-                className="w-full max-w-xs rounded mb-2"
-              />
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => modifierImage(index, e.target.value)}
-                className="border p-2 w-full mb-1"
-              />
-              <button
-                onClick={() => supprimerImage(index)}
-                className="text-red-500 text-sm hover:underline"
-              >
-                Supprimer cette image
-              </button>
-            </div>
-          ))}
-
-          <div className="flex gap-2 mt-2">
-            <input
-              type="text"
-              value={nouvelleImage}
-              onChange={(e) => setNouvelleImage(e.target.value)}
-              className="border p-2 flex-1"
-              placeholder="Ajouter une URL d'image"
-            />
-            <button
-              onClick={ajouterImage}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-            >
-              Ajouter
-            </button>
-          </div>
-        </div>
-
-        {/* Note libre */}
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Note libre</label>
-          <textarea
-            value={noteLibre}
-            onChange={(e) => setNoteLibre(e.target.value)}
-            rows={5}
-            className="border p-2 w-full resize-y"
-            placeholder="Prends des notes ici..."
-          />
-        </div>
+      <div className="flex gap-2 mb-4">
+        <input
+          className="border p-2 flex-1"
+          placeholder="URL image"
+          value={nouvelleImage}
+          onChange={(e) => setNouvelleImage(e.target.value)}
+        />
+        <button
+          onClick={ajouterImage}
+          className="bg-green-500 text-white px-4 py-2 rounded"
+          type="button"
+        >
+          Ajouter
+        </button>
       </div>
 
-      {/* Bouton imprimer */}
-      <div className="flex items-start mt-4">
+      <label>Note libre</label>
+      <textarea
+        className="border p-2 w-full mb-2"
+        rows={4}
+        value={noteLibre}
+        onChange={(e) => setNoteLibre(e.target.value)}
+      />
+
+      <div className="flex gap-2">
         <button
-          onClick={imprimerCarte}
-          className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+          onClick={enregistrerCarte}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+          type="button"
         >
-          🖨️ Imprimer
+          Enregistrer
+        </button>
+        <button
+          onClick={onRemove}
+          className="bg-red-600 text-white px-4 py-2 rounded"
+          type="button"
+        >
+          Supprimer
         </button>
       </div>
     </div>
