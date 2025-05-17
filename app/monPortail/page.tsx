@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import CarteMentale from '../component/CarteMentale';
 
-export default function DashboardPage() {
+export default function MonPortail() {
   const [cartes, setCartes] = useState<number[]>([]);
 
   const ajouterCarte = () => {
