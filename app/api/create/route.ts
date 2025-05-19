@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     const result = await collection.insertOne({
       nom,
       email,
+      carte:[],
       password: hashedPassword,
       createdAt: new Date()
     })

@@ -31,3 +31,4 @@ export const connectToDatabase = async (): Promise<Db> => {
   const client = await clientPromise;
   return client.db(dbName); // Utilise immovision par défaut
 };
+ export default clientPromise
