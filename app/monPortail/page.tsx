@@ -1,42 +1,42 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import CarteMentale from '../component/CarteMentale';
 
 export default function MonPortail() {
   const [cartes, setCartes] = useState<any[]>([]);
   const [emailUtilisateur, setEmailUtilisateur] = useState('');
-  const [loading, setLoading] = useState(false);  // Ajouté pour gérer l'état de chargement
-  const [error, setError] = useState<string | null>(null);  // Pour afficher un message d'erreur
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fonction pour récupérer les cartes sauvegardées pour l'utilisateur
   const recupererCartes = async () => {
     if (!emailUtilisateur) {
-      console.warn("L'email est vide, aucune récupération de cartes.");
+      setError("L'email est vide, veuillez renseigner un email.");
       return;
     }
 
-    setLoading(true);  // Démarre le chargement
-    setError(null); // Réinitialiser l'erreur avant de commencer
+    setLoading(true);
+    setError(null);
 
     try {
-      const response = await fetch(`api/clients/[email]/carte/ca/cartes`);
+      const response = await fetch(`/api/get-cartes?email=${encodeURIComponent(emailUtilisateur)}`);
+      const text = await response.text();
+      console.log('Contenu brut :', text);
 
-      if (!response.ok) {
-        // Si l'API retourne une erreur, on la gère ici
-        const data = await response.json();
-        setError(data.message || 'Erreur lors de la récupération des cartes.');
-        setCartes([]); // Réinitialise les cartes si l'API échoue
-        return;
+      try {
+        const data = JSON.parse(text);
+        setCartes(data.cartes || []);
+      } catch (e) {
+        console.error('Erreur de parsing JSON :', e);
+        setError('Réponse invalide reçue du serveur.');
+        setCartes([]);
       }
-
-      const data = await response.json();
-      setCartes(data.cartes || []);  // Met à jour l'état avec les cartes récupérées
     } catch (err) {
       console.error('Erreur réseau:', err);
       setError('Erreur lors de la récupération des cartes.');
+      setCartes([]);
     } finally {
-      setLoading(false);  // Fin du chargement
+      setLoading(false);
     }
   };
 
@@ -88,7 +88,10 @@ export default function MonPortail() {
         }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      console.log('Contenu brut :', text);
+      const data = JSON.parse(text);
+
       if (response.ok) {
         alert('Cartes sauvegardées avec succès !');
       } else {
@@ -115,9 +118,10 @@ export default function MonPortail() {
       <h2 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '10px' }}>
         Bienvenue sur votre portail
       </h2>
-      <p style={{ marginBottom: '20px' }}>Données chargées avec succès !</p>
+      <p style={{ marginBottom: '20px' }}>
+        {loading ? 'Chargement des cartes...' : 'Données chargées avec succès !'}
+      </p>
 
-      {/* Champ pour entrer l'email */}
       <div style={{ marginBottom: '20px' }}>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px' }}>
           Votre adresse email
@@ -131,14 +135,12 @@ export default function MonPortail() {
         />
       </div>
 
-      {/* Affichage du message d'erreur ou de chargement */}
-      {loading && <p>Chargement des cartes...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* Bouton pour charger les cartes */}
       <div style={{ marginTop: '20px' }}>
         <button
           onClick={recupererCartes}
+          disabled={!emailUtilisateur || loading}
           style={{
             padding: '12px 20px',
             backgroundColor: '#17a2b8',
@@ -146,7 +148,7 @@ export default function MonPortail() {
             border: 'none',
             borderRadius: '6px',
             fontWeight: '600',
-            cursor: 'pointer',
+            cursor: emailUtilisateur && !loading ? 'pointer' : 'not-allowed',
             width: '100%',
           }}
         >
@@ -154,7 +156,6 @@ export default function MonPortail() {
         </button>
       </div>
 
-      {/* Affichage des cartes */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginLeft: '30px' }}>
         {cartes.length > 0 ? (
           cartes.map((carte) => (
@@ -200,7 +201,7 @@ export default function MonPortail() {
             flex: 1,
           }}
         >
-          💾 Tout sauvegarder
+          💾 sauvegarder les cartes
         </button>
       </div>
     </div>

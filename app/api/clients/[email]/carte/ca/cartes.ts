@@ -1,4 +1,4 @@
-import { connectToDatabase } from '../../../lib/mongodb'; // Exemple d'import de fonction de connexion MongoDB
+import { connectToDatabase } from '../../../../../utils/mongodb'; // Exemple d'import de fonction de connexion MongoDB
 
 export default async function handler(req, res) {
   const { email } = req.query;

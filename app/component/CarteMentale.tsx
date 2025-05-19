@@ -3,9 +3,9 @@ import { useRef, useState, useEffect } from 'react';
 import { FaStar } from 'react-icons/fa';
 
 interface CarteMentaleProps {
-  carte: any;  // Carte avec toutes ses données
+  carte: any;
   onRemove: () => void;
-  onSave: (updatedCarte: any) => void;  // Fonction pour sauvegarder les modifications
+  onSave: (updatedCarte: any) => void;
 }
 
 const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) => {
@@ -18,11 +18,11 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
   const [visite, setVisite] = useState(carte.visite);
   const [note, setNote] = useState(carte.note);
   const [noteLibre, setNoteLibre] = useState(carte.noteLibre);
+  const [newImageUrl, setNewImageUrl] = useState(''); // champ pour l’ajout de nouvelles images
 
   const carteRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Met à jour les états si la carte change
     setNomLieu(carte.nomLieu);
     setPrix(carte.prix);
     setMetresCarres(carte.metresCarres);
@@ -47,34 +47,25 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
       note,
       noteLibre,
     };
-
-    console.log("Carte modifiée:", updatedCarte); // Log pour vérifier l'objet avant de l'envoyer
-    onSave(updatedCarte); // Sauvegarde les modifications
+    onSave(updatedCarte);
   };
 
   const imprimerCarte = () => {
     if (!carteRef.current) return;
-
     const contenu = carteRef.current.cloneNode(true) as HTMLElement;
 
-    // Supprimer les inputs liés aux images, ne garder que les images
     contenu.querySelectorAll('input[type="text"]').forEach((el) => {
       const parent = el.parentElement;
-      if (parent && parent.querySelector('img')) {
-        el.remove();
-      }
+      if (parent && parent.querySelector('img')) el.remove();
     });
 
-    // Supprimer tous les boutons et liens (ajouter, supprimer, imprimer)
     contenu.querySelectorAll('button, a').forEach((el) => el.remove());
 
-    // Remplacer les inputs et textarea par leur valeur texte
     contenu.querySelectorAll('input, textarea').forEach((el) => {
       const input = el as HTMLInputElement | HTMLTextAreaElement;
       const span = document.createElement('div');
 
       if (input instanceof HTMLInputElement && input.type === 'checkbox') {
-        // Affiche "Oui" ou "Non" pour les checkboxes
         const parent = input.closest('label');
         if (parent) {
           const output = document.createElement('div');
@@ -88,7 +79,6 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
       }
     });
 
-    // Remplacer les étoiles FaStar par du texte "★★★☆☆"
     const yellowStars = contenu.querySelectorAll('.fa-star.text-yellow-400').length;
     const starsContainer = contenu.querySelector('.fa-star')?.parentElement;
     if (starsContainer) {
@@ -98,7 +88,6 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
       starsContainer.replaceWith(starsText);
     }
 
-    // Ouvrir une nouvelle fenêtre pour l'impression
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.write(`
@@ -116,7 +105,6 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
         </html>
       `);
 
-      // Assurez-vous que les images sont complètement chargées avant de lancer l'impression
       const images = printWindow.document.querySelectorAll('img');
       let imagesLoaded = 0;
 
@@ -132,7 +120,6 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
         };
       });
 
-      // Si aucune image, imprime immédiatement
       if (images.length === 0) {
         printWindow.document.close();
         printWindow.focus();
@@ -145,14 +132,8 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
   return (
     <div className="border p-4 rounded-lg my-4 shadow-md flex gap-6" ref={carteRef}>
       <div className="flex-1">
-        <div className="flex justify-between mb-2">
-          <h3 className="font-bold">Carte Mentale - Logement</h3>
-          <button onClick={onRemove} className="text-red-500 hover:underline">
-            Supprimer
-          </button>
-        </div>
+        <h3 className="font-bold mb-4">Carte Mentale - Logement</h3>
 
-        {/* Formulaire */}
         <div className="mb-2">
           <label className="block">Nom du lieu</label>
           <input
@@ -160,6 +141,7 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
             value={nomLieu}
             onChange={(e) => setNomLieu(e.target.value)}
             className="border p-2 w-full"
+            placeholder="Entrez le nom du lieu"
           />
         </div>
 
@@ -170,6 +152,7 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
             value={prix}
             onChange={(e) => setPrix(e.target.value)}
             className="border p-2 w-full"
+            placeholder="Entrez le prix"
           />
         </div>
 
@@ -180,6 +163,7 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
             value={metresCarres}
             onChange={(e) => setMetresCarres(e.target.value)}
             className="border p-2 w-full"
+            placeholder="Entrez la surface en m²"
           />
         </div>
 
@@ -190,6 +174,7 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
             value={localisation}
             onChange={(e) => setLocalisation(e.target.value)}
             className="border p-2 w-full"
+            placeholder="Entrez l'adresse ou le quartier"
           />
         </div>
 
@@ -211,7 +196,7 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
         </div>
 
         {/* URL du site */}
-        <div className="mb-2">
+        <div className="mb-4">
           <label className="block">URL du site</label>
           <input
             type="text"
@@ -220,6 +205,16 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
             className="border p-2 w-full"
             placeholder="https://exemple.com"
           />
+          {siteUrl && (
+            <a
+              href={siteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline mt-1 inline-block"
+            >
+              Visiter le site
+            </a>
+          )}
         </div>
 
         {/* Notes libres */}
@@ -262,19 +257,20 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
             </div>
           ))}
 
+          {/* Ajout nouvelle image */}
           <div className="flex gap-2 mt-2">
             <input
               type="text"
-              value={siteUrl}
-              onChange={(e) => setSiteUrl(e.target.value)}
+              value={newImageUrl}
+              onChange={(e) => setNewImageUrl(e.target.value)}
               className="border p-2 flex-1"
               placeholder="Ajouter une URL d'image"
             />
             <button
               onClick={() => {
-                if (siteUrl.trim() !== '') {
-                  setImageUrls([...imageUrls, siteUrl.trim()]);
-                  setSiteUrl('');
+                if (newImageUrl.trim() !== '') {
+                  setImageUrls([...imageUrls, newImageUrl.trim()]);
+                  setNewImageUrl('');
                 }
               }}
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
@@ -284,12 +280,13 @@ const CarteMentale: React.FC<CarteMentaleProps> = ({ carte, onRemove, onSave }) 
           </div>
         </div>
 
+        {/* Actions */}
         <div className="flex justify-between mt-4">
           <button
             onClick={handleSave}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            Sauvegarder
+            Sauvegarder les informations
           </button>
           <button
             onClick={onRemove}
