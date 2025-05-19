@@ -67,11 +67,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="z-10 flex-1 p-6 md:p-12">{children}</main>
 
         {/* Footer */}
-        <footer className="z-10 bg-opacity-30 backdrop-blur-sm border-t border-white/10 text-center py-4">
-          <a href="/cgu" className="hover:underline text-sm text-white/80">
-            © 2025 - Tous droits réservés
-          </a>
-        </footer>
+        <footer className="z-10 bg-opacity-30 backdrop-blur-sm border-t border-white/10 text-center py-4 flex flex-col md:flex-row items-center justify-center gap-4">
+  <a href="/cgu" className="hover:underline text-sm text-white/80">
+    © 2025 - Tous droits réservés
+  </a>
+  <a
+    href="/contact"
+    className="bg-white text-black px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition"
+  >
+    ✉️ Nous contacter
+  </a>
+</footer>
       </body>
     </html>
   );
