@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import CarteMentale from '../component/CarteMentale';
-
+import React from 'react';
 export default function MonPortail() {
   const [cartes, setCartes] = useState<any[]>([]);
   const [emailUtilisateur, setEmailUtilisateur] = useState('');
